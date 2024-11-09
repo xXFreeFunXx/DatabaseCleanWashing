@@ -104,9 +104,10 @@ if ($pakFiles) {
 
 # Create list of wrong assets only if db_assets.txt and mod_assets.txt exist
 if ((Test-Path $db_assets) -and (Test-Path $mod_assets)) {
+    Write-Output "`nGet asset paths from 'db_assets.txt' & 'mod_assets.txt'"
     $dbAssetPaths = Get-Content -Path $db_assets | ForEach-Object { $_ -replace '\..+$', '' } | Sort-Object -Unique
     $modAssetPaths = Get-Content -Path $mod_assets | Sort-Object -Unique
-
+    Write-Output "`nStart Compare 'db_assets.txt' & 'mod_assets.txt'"
     $wrong_assets = Compare-Object -ReferenceObject $dbAssetPaths -DifferenceObject $modAssetPaths -PassThru | Where-Object { $_ -notin $modAssetPaths }
 
     if ($wrong_assets) {
