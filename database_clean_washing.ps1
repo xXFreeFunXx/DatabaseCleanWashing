@@ -97,7 +97,7 @@ if ($pakFiles) {
         $currentFileIndex++
         Write-Progress -Activity "Processing .pak files" -Status "File $currentFileIndex of $totalPakFiles" -PercentComplete (($currentFileIndex / $totalPakFiles) * 100)
     }
-
+    Write-Progress -Completed
     Write-Output "`nMod Asset paths have been written to $mod_assets."
 } else {
     Write-Output "`nNo .pak files or Mod Asset paths found; mod_assets.txt will not be created."
@@ -120,7 +120,7 @@ if ((Test-Path $db_assets) -and (Test-Path $mod_assets)) {
         }
         Write-Progress -Activity "Comparing assets" -Status "Comparing $i of $totalDbAssets" -PercentComplete (($i / $totalDbAssets) * 100)
     }
-
+    Write-Progress -Completed
     if ($wrong_assets) {
         $wrong_assets_path = Join-Path $main_dir -ChildPath "wrong_assets.txt"
         $wrong_assets | Set-Content -Path $wrong_assets_path
