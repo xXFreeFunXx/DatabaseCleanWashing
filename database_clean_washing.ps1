@@ -1,6 +1,6 @@
 # Set main directory to the directory where the script is located
 $main_dir = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
-$databaseName = " "  # Database name without file extension "game"
+$databaseName = " "  # Database name without file extension Exiled Lands game.db > "game" | Siptah dlc_siptah.db > "dlc_siptah"
 $databasePath = Join-Path $main_dir "..\$databaseName.db"  # Path to the SQLite database
 $db_assets = Join-Path $main_dir -ChildPath "db_assets.txt"  # Output file for database assets
 $mod_assets = Join-Path $main_dir -ChildPath "mod_assets.txt"  # Output file for mod assets
