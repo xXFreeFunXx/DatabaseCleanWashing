@@ -109,7 +109,7 @@ if ((Test-Path $db_assets) -and (Test-Path $mod_assets)) {
     $modAssetPaths = Get-Content -Path $mod_assets | Sort-Object -Unique
     Write-Output "`nStart Compare 'db_assets.txt' & 'mod_assets.txt'"
     $wrong_assets = Compare-Object -ReferenceObject $dbAssetPaths -DifferenceObject $modAssetPaths -PassThru | Where-Object { $_ -notin $modAssetPaths }
-
+    Write-Output "`nEnd of the comparison, check if 'wrong_assets.txt' exists"
     if ($wrong_assets) {
         $wrong_assets_path = Join-Path $main_dir -ChildPath "wrong_assets.txt"
         $wrong_assets | Set-Content -Path $wrong_assets_path
