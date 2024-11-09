@@ -1,16 +1,13 @@
-# Setze das aktuelle Verzeichnis auf den Speicherort des Skripts
+# Set the current directory to the script's location
 $main_dir = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
-$databaseName = "game"  # Database name without file extension "game"
+$databaseName = " "  # Database name without file extension, e.g., "game"
 
-# Pfade zur Datenbank und zur sqlite3.exe (eine Ebene über dem aktuellen Verzeichnis)
+# Paths to the database and sqlite3.exe (one level above the current directory)
 $dbPath = Join-Path -Path $main_dir -ChildPath "..\$databaseName.db"
 $sqlitePath = Join-Path -Path $main_dir -ChildPath "..\sqlite3.exe"
 
-# Pfad zur "wrong_assets.txt" im selben Verzeichnis wie das Skript
+# Path to "wrong_assets.txt" in the same directory as the script
 $inputFile = Join-Path -Path $main_dir -ChildPath "wrong_assets.txt"
-
-# Lese alle Zeilen aus der wrong_assets.txt
-$assetPaths = Get-Content -Path $inputFile
 
 # Check if the database name is empty or contains only whitespace
 if ([string]::IsNullOrWhiteSpace($databaseName)) {
@@ -19,13 +16,22 @@ if ([string]::IsNullOrWhiteSpace($databaseName)) {
     exit
 }
 
-# Gehe jede Zeile durch und lösche den entsprechenden Eintrag in der Datenbank
+# Check if the "wrong_assets.txt" file exists
+if (!(Test-Path -Path $inputFile)) {
+    Write-Output "`nNo 'wrong_assets.txt' file found. Exiting script as there are no assets to delete."
+    exit
+}
+
+# Read all lines from wrong_assets.txt
+$assetPaths = Get-Content -Path $inputFile
+
+# Process each line and delete the corresponding entry in the database
 foreach ($assetPath in $assetPaths) {
-    # Formuliere die SQL-Abfrage für das Löschen des Eintrags
+    # Formulate the SQL query to delete the entry
     $query = "DELETE FROM actor_position WHERE class = '$assetPath';"
     
-    # Führe die Abfrage in der Datenbank aus
+    # Execute the query in the database
     & $sqlitePath $dbPath "$query"
 }
 
-Write-Output "Löschen der Einträge abgeschlossen."
+Write-Output "Asset deletion completed."
