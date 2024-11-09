@@ -134,7 +134,7 @@ if ((Test-Path $db_assets) -and (Test-Path $mod_assets)) {
         if ($assetPath -notin $modAssetPaths) {
             $wrong_assets += $assetPath
         }
-        Write-Progress -Activity "  Comparing assets" -Status " $i of $totalDbAssets" -PercentComplete (($i / $totalDbAssets) * 100)
+        Write-Progress -Activity "Comparing assets" -Status " $i of $totalDbAssets" -PercentComplete (($i / $totalDbAssets) * 100)
     }
     Write-Progress -Completed
     if ($wrong_assets) {
