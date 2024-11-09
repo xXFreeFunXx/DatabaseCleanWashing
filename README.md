@@ -5,7 +5,7 @@ The **Database Clean Washing** project is designed for cleaning and managing ass
 ## Requirements
 - **UnrealPak.exe**: Ensure `UnrealPak.exe` is available in the `DatabaseCleanWashing` directory for extracting asset paths from `.pak` files.
 - **Database Name**: Set a valid database name (without the `.db` extension) in the scripts.
-- **Location**: Place the entire `DatabaseCleanWashing` directory in the `Saved` folder of your Conan Exiles server: `...\ConanSandbox\Saved\DatabaseCleanWashing\database_clean_washing.ps1`
+- **Location**: Place the entire `DatabaseCleanWashing` directory in the `Saved` folder of your Conan Exiles server: `...\ConanSandbox\Saved\DatabaseCleanWashing`
 
 
 ## Scripts
