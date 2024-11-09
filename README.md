@@ -22,7 +22,7 @@ This PowerShell script is designed to identify mismatches between Mod Assets sto
  - Open PowerShell in the `Saved` folder and execute the script.
  - Example:
    ```powershell
-   .\ModAssetChecker.ps1
+   .\database_clean_washing.ps1
    ```
 
 ### Script Output
@@ -40,20 +40,3 @@ The script will generate the following files in the same directory:
 - If the database query returns no assets, `db_assets.txt` will not be created.
 - If there are no mismatched assets, `wrong_assets.txt` will not be created.
 - If the `$databaseName` is empty or contains only whitespace, an error message will be shown, and the script will exit.
-
-## Example Directory Structure
-
-```plaintext
-ConanSandbox
-└── Saved
-  ├── ModAssetChecker.ps1
-  ├── UnrealPak.exe
-  ├── savagewilds_game.db         # Example database file
-  ├── Mods
-  │   ├── modlist.txt
-  │   ├── Mod1.pak
-  │   └── Mod2.pak
-  └── Output Files
-      ├── db_assets.txt
-      ├── mod_assets.txt
-      └── wrong_assets.txt
