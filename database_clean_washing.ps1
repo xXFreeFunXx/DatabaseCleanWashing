@@ -1,10 +1,10 @@
 # Set main directory to the directory where the script is located
 $main_dir = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
-$databaseName = " "  # Database name without file extension
+$databaseName = " "  # Database name without file extension "game"
 $databasePath = Join-Path $main_dir "..\$databaseName.db"  # Path to the SQLite database
-$db_assets = Join-Path $main_dir "db_assets.txt"  # Output file for database assets
-$mod_assets = Join-Path $main_dir "mod_assets.txt"  # Output file for mod assets
-$unrealPakPath = Join-Path $main_dir "UnrealPak.exe"  # Path to UnrealPak.exe
+$db_assets = Join-Path $main_dir -ChildPath "db_assets.txt"  # Output file for database assets
+$mod_assets = Join-Path $main_dir -ChildPath "mod_assets.txt"  # Output file for mod assets
+$unrealPakPath = Join-Path $main_dir -ChildPath "UnrealPak.exe"  # Path to UnrealPak.exe
 
 # Check if the database name is empty or contains only whitespace
 if ([string]::IsNullOrWhiteSpace($databaseName)) {
@@ -23,7 +23,7 @@ if (-Not (Test-Path $unrealPakPath)) {
 # Create a database backup with the current date and timestamp
 function CreateDatabaseBackup {
     $timestamp = (Get-Date).ToString("yyyy.MM.dd_HH.mm.ss")
-    $backupPath = Join-Path $main_dir "${databaseName}_${timestamp}.db"
+    $backupPath = Join-Path $main_dir -ChildPath "${databaseName}_${timestamp}.db"
 
     if (Test-Path $databasePath) {
         Write-Output "`nCreating database backup at '$backupPath'..."
@@ -40,7 +40,7 @@ function CreateDatabaseBackup {
 CreateDatabaseBackup
 
 # SQLite3 command and query to retrieve Mod Asset paths from the database
-$sqlitePath = Join-Path $main_dir "..\sqlite3.exe"  # Path to sqlite3.exe
+$sqlitePath = Join-Path $main_dir -ChildPath "..\sqlite3.exe"  # Path to sqlite3.exe
 $query = "SELECT DISTINCT class FROM actor_position WHERE class LIKE '/Game/Mods/%';"
 
 # Execute the query and store results in a variable
@@ -53,11 +53,13 @@ if ($dbAssetResults) {
     (Get-Content $db_assets | Select-Object -Skip 1) | Set-Content $db_assets
     Write-Output "`nMod Asset paths from the database have been successfully saved to '$db_assets'."
 } else {
-    Write-Output "`nNo Mod Asset paths found in the database query."
+    Write-Output "`nError: No Mod Asset paths found in the database query."
+    Read-Host
+    exit
 }
 
 # Set mods directory and modlist.txt path
-$modsDir = Join-Path $main_dir "..\..\Mods"
+$modsDir = Join-Path $main_dir -ChildPath "..\..\Mods"
 $modListPath = Join-Path $modsDir "modlist.txt"
 
 # Collect .pak files
@@ -108,7 +110,7 @@ if ((Test-Path $db_assets) -and (Test-Path $mod_assets)) {
     $wrong_assets = Compare-Object -ReferenceObject $dbAssetPaths -DifferenceObject $modAssetPaths -PassThru | Where-Object { $_ -notin $modAssetPaths }
 
     if ($wrong_assets) {
-        $wrong_assets_path = Join-Path $main_dir "wrong_assets.txt"
+        $wrong_assets_path = Join-Path $main_dir -ChildPath "wrong_assets.txt"
         $wrong_assets | Set-Content -Path $wrong_assets_path
         Write-Output "`nWrong Mod Assets have been saved to '$wrong_assets_path'."
     } else {
