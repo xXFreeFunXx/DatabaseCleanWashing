@@ -5,6 +5,17 @@ $databasePath = Join-Path $main_dir "..\$databaseName.db"  # Path to the SQLite 
 $db_assets = Join-Path $main_dir -ChildPath "db_assets.txt"  # Output file for database assets
 $mod_assets = Join-Path $main_dir -ChildPath "mod_assets.txt"  # Output file for mod assets
 $unrealPakPath = Join-Path $main_dir -ChildPath "UnrealPak.exe"  # Path to UnrealPak.exe
+$DebugMode = $false  # Set to $true to activate debug prints
+
+# Debugging function
+function Write-DebugMessage {
+    param (
+        [string]$Message
+    )
+    if ($DebugMode) {
+        Write-Output "`nDebug: $Message"
+    }
+}
 
 # Check if the database name is empty or contains only whitespace
 if ([string]::IsNullOrWhiteSpace($databaseName)) {
@@ -20,15 +31,17 @@ if (-Not (Test-Path $unrealPakPath)) {
     exit
 }
 
+Write-Output "`nStart the washing process..."
+
 # Create a database backup with the current date and timestamp
 function CreateDatabaseBackup {
     $timestamp = (Get-Date).ToString("yyyy.MM.dd_HH.mm.ss")
     $backupPath = Join-Path $main_dir -ChildPath "${databaseName}_${timestamp}.db"
     
     if (Test-Path $databasePath) {
-        Write-Output "`nCreating database backup at '$backupPath'..."
+        Write-DebugMessage "Creating database backup at '$backupPath'..."
         Copy-Item -Path $databasePath -Destination $backupPath -Force
-        Write-Output "`nBackup successfully created: $backupPath"
+        Write-DebugMessage "Backup successfully created: $backupPath"
     } else {
         Write-Output "`nError: Database file '$databasePath' not found."
         Read-Host
@@ -49,7 +62,8 @@ if ($dbAssetResults) {
     $dbAssetResults | Out-File -FilePath $db_assets -Encoding UTF8
     # Optional: Remove the header if it's not needed
     (Get-Content $db_assets | Select-Object -Skip 1) | Set-Content $db_assets
-    Write-Output "`nMod Asset paths from the database have been successfully saved to '$db_assets'."
+    Write-DebugMessage "Mod Asset paths from the database have been successfully saved to '$db_assets'."
+    Write-Output "`n    Searching for old socks in the database..."
 } else {
     Write-Output "`nError: No Mod Asset paths found in the database query."
     Read-Host
@@ -64,7 +78,7 @@ $pakFiles = Get-ChildItem -Path "$modsDir\*.pak" -ErrorAction SilentlyContinue
 # Check if no .pak files were found, use modlist.txt if available, and save to mod_assets.txt if any are found
 if (-Not $pakFiles) {
     if (Test-Path $modListPath) {
-        Write-Output "`nNo .pak files found in the Mods directory. Using modlist.txt instead."
+        Write-DebugMessage "No .pak files found in the Mods directory. Using modlist.txt instead."
         $pakFiles = Get-Content -Path $modListPath | Where-Object { $_ -match "\.pak$" }
     } else {
         Write-Output "`nError: Neither .pak files nor modlist.txt found in the Mods directory."
@@ -82,9 +96,10 @@ if ($pakFiles) {
     $totalPakFiles = $pakFiles.Count
     $currentFileIndex = 0
 
+    Write-Output "`n    Looking for real socks in the modlist...`n"
     foreach ($pakFile in $pakFiles) {
         $pakFilePath = if ($pakFile -is [System.IO.FileInfo]) { $pakFile.FullName } else { $pakFile }
-        Write-Output "`nProcessing $pakFilePath ..."
+        Write-DebugMessage "Processing $pakFilePath"
         $output = & "$unrealPakPath" "$pakFilePath" "-Test" 2>&1
 
         foreach ($line in $output) {
@@ -98,17 +113,18 @@ if ($pakFiles) {
         Write-Progress -Activity "Processing .pak files" -Status "File $currentFileIndex of $totalPakFiles" -PercentComplete (($currentFileIndex / $totalPakFiles) * 100)
     }
     Write-Progress -Completed
-    Write-Output "`nMod Asset paths have been written to $mod_assets."
+    Write-DebugMessage "Mod Asset paths have been written to $mod_assets."
 } else {
-    Write-Output "`nNo .pak files or Mod Asset paths found; mod_assets.txt will not be created."
+    Write-Output "`nError: No .pak files or Mod Asset paths found; mod_assets.txt will not be created."
 }
 
 # Create list of wrong assets only if db_assets.txt and mod_assets.txt exist
 if ((Test-Path $db_assets) -and (Test-Path $mod_assets)) {
-    Write-Output "`nGet asset paths from 'db_assets.txt' & 'mod_assets.txt'"
+    Write-DebugMessage "Get asset paths from 'db_assets.txt' & 'mod_assets.txt'"
+    Write-Output "`n    Looking for old socks among the many new ones...`n"
     $dbAssetPaths = Get-Content -Path $db_assets | ForEach-Object { $_ -replace '\..+$', '' } | Sort-Object -Unique
     $modAssetPaths = Get-Content -Path $mod_assets | Sort-Object -Unique
-    Write-Output "`nStart Compare 'db_assets.txt' & 'mod_assets.txt'"
+    Write-DebugMessage "Start Compare 'db_assets.txt' & 'mod_assets.txt'"
 
     $totalDbAssets = $dbAssetPaths.Count
     $wrong_assets = @()
@@ -118,18 +134,18 @@ if ((Test-Path $db_assets) -and (Test-Path $mod_assets)) {
         if ($assetPath -notin $modAssetPaths) {
             $wrong_assets += $assetPath
         }
-        Write-Progress -Activity "Comparing assets" -Status "Comparing $i of $totalDbAssets" -PercentComplete (($i / $totalDbAssets) * 100)
+        Write-Progress -Activity "  Comparing assets" -Status " $i of $totalDbAssets" -PercentComplete (($i / $totalDbAssets) * 100)
     }
     Write-Progress -Completed
     if ($wrong_assets) {
         $wrong_assets_path = Join-Path $main_dir -ChildPath "wrong_assets.txt"
         $wrong_assets | Set-Content -Path $wrong_assets_path
-        Write-Output "`nWrong Mod Assets have been saved to '$wrong_assets_path'."
+        Write-DebugMessage "Wrong Mod Assets have been saved to '$wrong_assets_path'."
         Write-Output "`nDone, now start the CleanUp if you want"
         Read-Host
     } else {
-        Write-Output "`nNo wrong Mod Assets found."
+        Write-Output "`nNo wrong Mod Assets found. Good! :)"
     }
 } else {
-    Write-Output "`nSkipping wrong asset check as either db_assets.txt or mod_assets.txt is missing."
+    Write-Output "`nError: Skipping wrong asset check as either db_assets.txt or mod_assets.txt is missing."
 }
