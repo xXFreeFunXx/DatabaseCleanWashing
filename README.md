@@ -3,10 +3,10 @@
 The **Database Clean Washing** project is designed for cleaning and managing asset references in your Conan Exiles server database. The main script, `database_clean_washing.ps1`, collects asset paths from both the database and mod files, identifies any mismatches, and lists "wrong assets" that can then be removed from the database using the additional cleanup script `database_cleanup.ps1`.
 
 ## Requirements
-- **UnrealPak.exe**: Ensure `UnrealPak.exe` is available in the `DatabaseCleanWashing` directory for extracting asset paths from `.pak` files.
+- **UnrealPak.exe**: This tool is required to extract asset paths from `.pak` files. You can find `UnrealPak.exe` in the Conan Exiles DevKit under the following path: `...\ConanExilesDevKit\Engine\Binaries\Win64\UnrealPak.exe`
+Copy `UnrealPak.exe` to the `DatabaseCleanWashing` directory, where the PowerShell scripts are also located.
 - **Database Name**: Set a valid database name (without the `.db` extension) in the scripts.
-- **Location**: Place the entire `DatabaseCleanWashing` directory in the `Saved` folder of your Conan Exiles server: `...\ConanSandbox\Saved\DatabaseCleanWashing`
-
+- **Location**: Place the entire `DatabaseCleanWashing` directory in the `Saved` folder of your Conan Exiles server: `...\ConanSandbox\Saved\DatabaseCleanWashing
 
 ## Scripts
 
@@ -39,5 +39,6 @@ This script deletes entries listed in `wrong_assets.txt` from the database.
 1. Confirm the server is offline.
 2. Open PowerShell and navigate to the `DatabaseCleanWashing` directory.
 3. Run the script:
- ```powershell
- .\database_cleanup.ps1
+   ```powershell
+   .\database_cleanup.ps1
+   ```
