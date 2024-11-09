@@ -11,8 +11,7 @@ This PowerShell script is designed to identify mismatches between Mod Assets sto
 
 - **UnrealPak.exe**: Ensure that `UnrealPak.exe` (found in the Conan Exiles DevKit) is located in the same directory as this script. This tool is used to read `.pak` files and extract asset paths.
 - **Database Name**: Set the `$databaseName` variable within the script to match the name of your SQLite database (without the `.db` extension).
-- **Script Location**: Place this script in the `Saved` directory of your Conan Exiles server at the following path:
-...\ConanSandbox\Saved
+- **Script Location**: Place this script in the `Saved` directory of your Conan Exiles server at the following path: `...\ConanSandbox\Saved`
 ## Script Usage
 
 ### Steps
