@@ -24,7 +24,7 @@ if (-Not (Test-Path $unrealPakPath)) {
 function CreateDatabaseBackup {
     $timestamp = (Get-Date).ToString("yyyy.MM.dd_HH.mm.ss")
     $backupPath = Join-Path $main_dir -ChildPath "${databaseName}_${timestamp}.db"
-
+    
     if (Test-Path $databasePath) {
         Write-Output "`nCreating database backup at '$backupPath'..."
         Copy-Item -Path $databasePath -Destination $backupPath -Force
@@ -40,10 +40,8 @@ function CreateDatabaseBackup {
 CreateDatabaseBackup
 
 # SQLite3 command and query to retrieve Mod Asset paths from the database
-$sqlitePath = Join-Path $main_dir -ChildPath "..\sqlite3.exe"  # Path to sqlite3.exe
+$sqlitePath = Join-Path $main_dir -ChildPath "..\sqlite3.exe"
 $query = "SELECT DISTINCT class FROM actor_position WHERE class LIKE '/Game/Mods/%';"
-
-# Execute the query and store results in a variable
 $dbAssetResults = & $sqlitePath $databasePath -header -csv "$query"
 
 # Save results to db_assets.txt only if results are found
@@ -61,8 +59,6 @@ if ($dbAssetResults) {
 # Set mods directory and modlist.txt path
 $modsDir = Join-Path $main_dir -ChildPath "..\..\Mods"
 $modListPath = Join-Path $modsDir "modlist.txt"
-
-# Collect .pak files
 $pakFiles = Get-ChildItem -Path "$modsDir\*.pak" -ErrorAction SilentlyContinue
 
 # Check if no .pak files were found, use modlist.txt if available, and save to mod_assets.txt if any are found
@@ -83,10 +79,12 @@ if ($pakFiles) {
     Remove-Item -Path $mod_assets -ErrorAction Ignore
     New-Item -Path $mod_assets -ItemType File | Out-Null
 
+    $totalPakFiles = $pakFiles.Count
+    $currentFileIndex = 0
+
     foreach ($pakFile in $pakFiles) {
         $pakFilePath = if ($pakFile -is [System.IO.FileInfo]) { $pakFile.FullName } else { $pakFile }
         Write-Output "`nProcessing $pakFilePath ..."
-
         $output = & "$unrealPakPath" "$pakFilePath" "-Test" 2>&1
 
         foreach ($line in $output) {
@@ -95,6 +93,9 @@ if ($pakFiles) {
                 Add-Content -Path $mod_assets -Value "/Game/$path"
             }
         }
+
+        $currentFileIndex++
+        Write-Progress -Activity "Processing .pak files" -Status "File $currentFileIndex of $totalPakFiles" -PercentComplete (($currentFileIndex / $totalPakFiles) * 100)
     }
 
     Write-Output "`nMod Asset paths have been written to $mod_assets."
@@ -108,12 +109,24 @@ if ((Test-Path $db_assets) -and (Test-Path $mod_assets)) {
     $dbAssetPaths = Get-Content -Path $db_assets | ForEach-Object { $_ -replace '\..+$', '' } | Sort-Object -Unique
     $modAssetPaths = Get-Content -Path $mod_assets | Sort-Object -Unique
     Write-Output "`nStart Compare 'db_assets.txt' & 'mod_assets.txt'"
-    $wrong_assets = Compare-Object -ReferenceObject $dbAssetPaths -DifferenceObject $modAssetPaths -PassThru | Where-Object { $_ -notin $modAssetPaths }
-    Write-Output "`nEnd of the comparison, check if 'wrong_assets.txt' exists"
+
+    $totalDbAssets = $dbAssetPaths.Count
+    $wrong_assets = @()
+
+    for ($i = 0; $i -lt $totalDbAssets; $i++) {
+        $assetPath = $dbAssetPaths[$i]
+        if ($assetPath -notin $modAssetPaths) {
+            $wrong_assets += $assetPath
+        }
+        Write-Progress -Activity "Comparing assets" -Status "Comparing $i of $totalDbAssets" -PercentComplete (($i / $totalDbAssets) * 100)
+    }
+
     if ($wrong_assets) {
         $wrong_assets_path = Join-Path $main_dir -ChildPath "wrong_assets.txt"
         $wrong_assets | Set-Content -Path $wrong_assets_path
         Write-Output "`nWrong Mod Assets have been saved to '$wrong_assets_path'."
+        Write-Output "`nDone, now start the CleanUp if you want"
+        Read-Host
     } else {
         Write-Output "`nNo wrong Mod Assets found."
     }
