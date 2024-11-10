@@ -31,24 +31,24 @@ This script:
 
  - Deletes any asset paths listed in `wrong_assets.txt` from the database.
 ## Usage
-1. Run the Script:
+1. Run the Script
 
  - To initiate the asset extraction and comparison, run `start_wasching.bat`.
  - To delete the "wrong assets," run `start_cleanup.bat`.
 2. Database Name Prompt:
 
  - When running the script, you will be prompted to enter the database name (without the `.db` extension).
-3. Results:
+3. Results
 
  - `db_assetsPath.txt` – Contains asset paths extracted from the database.
  - `mod_assetsPath.txt` – Contains asset paths extracted from the mod files.
  - `wrong_assets.txt` – Contains "wrong" assets identified for cleanup.
-4. Backup:
+4. Backup
 
  - A backup of the database is automatically created before any processing. This ensures that the original data is preserved.
-5. Progress Indicators:
+5. Progress Indicators
 
-  - The script displays progress during the asset comparison and cleanup process, providing feedback on each operation.
+ - The script displays progress during the asset comparison and cleanup process, providing feedback on each operation.
 ## Notes
 **UnrealPak.exe Path**: Ensure that `UnrealPak.exe` is in the correct directory.
 **SQLite3 Path**: Ensure `sqlite3.exe` is available in the parent directory to execute queries.
