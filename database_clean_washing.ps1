@@ -168,6 +168,8 @@ switch ($arg) {
 
         # Read all lines from wrong_assets.txt
         $assetPaths = Get-Content -Path $mod_assetsPath
+        $totalAssets = $assetPaths.Count  # Total number of assets for progress tracking
+        $currentAsset = 0  # Initialize the current progress
 
         # Process each line and delete the corresponding entry in the database
         foreach ($assetPath in $assetPaths) {
@@ -176,9 +178,17 @@ switch ($arg) {
             
             # Execute the query in the database
             & $sqlitePath $databasePath "$query"
+            
+            # Update the progress
+            $currentAsset++
+            $percentComplete = ($currentAsset / $totalAssets) * 100
+            
+            # Display the progress bar
+            Write-Progress -Activity "Deleting assets" -Status "Processing $currentAsset of $totalAssets" -PercentComplete $percentComplete
         }
-
-        Write-Output "Asset deletion completed."
+        Write-Progress -Activity "  Deleting assets Completed" -Completed
+        Write-Output "`n    Old socks completely removed"
+        Read-Host
     }
     Default {
         Write-Output "Whatever you do, it's wrong!"
