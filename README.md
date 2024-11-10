@@ -17,56 +17,39 @@ The script can only be executed via the following batch files, which are located
 
 Double-click the appropriate batch file to run the script.
 
-## Scripts
-1. `database_clean_washing.ps1`
+## Script Details
+`database_clean_washing.ps1`
 This script:
 
-- Creates a backup of the database in the `DatabaseCleanWashing` directory.
-- Gathers asset paths from the database and mod files, compares them, and identifies mismatches.
-- Outputs a list of incorrect (or "wrong") assets in a file named `wrong_assets.txt` within the `DatabaseCleanWashing` directory.
-- Deletes any "wrong" assets from the database if the cleanup parameter is used.
+1. Creates a Database Backup: Saves a timestamped backup of the database in the `DatabaseCleanWashing` directory.
 
+2. Asset Extraction and Comparison (via `wasching` parameter):
+
+ - Extracts paths of assets from the database and mod files, saving them to `db_assetsPath.txt` and `mod_assetsPath.txt`.
+ - Compares asset paths to identify mismatches and saves incorrect assets in `wrong_assets.txt`.
+3. Cleanup of Wrong Assets (via `cleanup` parameter):
+
+ - Deletes any asset paths listed in `wrong_assets.txt` from the database.
 ## Usage
-1. Run the script using one of the batch files:
+1. Run the Script:
 
-To start asset extraction and comparison, run start_wasching.bat.
-This will automatically call the script with the wasching parameter.
-To delete the "wrong assets" from the database, run start_cleanup.bat.
-This will automatically call the script with the cleanup parameter.
+ - To initiate the asset extraction and comparison, run `start_wasching.bat`.
+ - To delete the "wrong assets," run `start_cleanup.bat`.
 2. Database Name Prompt:
 
-You will be prompted to enter the name of the database (without the file extension). Common database names are:
-For Exiled Lands: game
-For Siptah: dlc_siptah
-For Savage Wilds: savagewilds_game
+When running the script, you will be prompted to enter the database name (without the `.db` extension).
 3. Results:
 
-If any mismatched mod assets are found, they will be saved in wrong_assets.txt.
-The database backup will be saved with a timestamped filename in the DatabaseCleanWashing directory.
-4. Mod Assets:
+`db_assetsPath.txt` – Contains asset paths extracted from the database.
+`mod_assetsPath.txt` – Contains asset paths extracted from the mod files.
+`wrong_assets.txt` – Contains "wrong" assets identified for cleanup.
+4. Backup:
 
-The script checks for assets in .pak files located in the Mods directory. If no .pak files are found, it will use modlist.txt if available.
-Asset paths are extracted from both the database and the mod files and compared.
-5. Comparing Assets:
+A backup of the database is automatically created before any processing. This ensures that the original data is preserved.
+Progress Indicators:
 
-The script will compare asset paths from the database (db_assetsPath.txt) and mod files (mod_assetsPath.txt), and generate a list of wrong assets in wrong_assets.txt.
-6. Cleanup:
-
-If the cleanup parameter is used, the script will read from wrong_assets.txt and delete the corresponding entries from the database.
-Important Files
-db_assetsPath.txt – Contains the asset paths extracted from the database.
-mod_assetsPath.txt – Contains the asset paths extracted from the mod files.
-wrong_assets.txt – Contains the wrong (outdated) assets that can be deleted from the database.
-Troubleshooting
-Missing UnrealPak.exe:
-If UnrealPak.exe is not found, ensure that the file is located in the ..\ConanExilesDevKit\Engine\Binaries\Win64\ directory, and that the path in the script is correctly specified.
-
-SQLite3 Errors:
-If SQLite3 does not execute properly, check that the path to sqlite3.exe is correct and that SQLite3 is properly installed on your system.
-
-Empty or Missing Files:
-If no results are found from the database query or the .pak files, ensure that the database is correct and the mod files are located in the right directory.
-
-Notes
-The script automatically creates backups of the database before processing, so no data will be lost.
-If errors occur while running the script, enable the debug output by activating the Write-DebugMessage function in the script to get additional details.
+The script displays progress during the asset comparison and cleanup process, providing feedback on each operation.
+## Notes
+**UnrealPak.exe Path**: Ensure that `UnrealPak.exe` is in the correct directory.
+**SQLite3 Path**: Ensure `sqlite3.exe` is available in the parent directory to execute queries.
+**Debug Mode**: Set `$DebugMode` to `$true` in the script to activate additional debug messages for troubleshooting.
