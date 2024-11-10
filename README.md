@@ -48,7 +48,7 @@ This script:
  - A backup of the database is automatically created before any processing. This ensures that the original data is preserved.
 5. Progress Indicators:
 
- - The script displays progress during the asset comparison and cleanup process, providing feedback on each operation.
+  - The script displays progress during the asset comparison and cleanup process, providing feedback on each operation.
 ## Notes
 **UnrealPak.exe Path**: Ensure that `UnrealPak.exe` is in the correct directory.
 **SQLite3 Path**: Ensure `sqlite3.exe` is available in the parent directory to execute queries.
