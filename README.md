@@ -51,5 +51,7 @@ This script:
    - The script displays progress during the asset comparison and cleanup process, providing feedback on each operation.
 ## Notes
 **UnrealPak.exe Path**: Ensure that `UnrealPak.exe` is in the correct directory.
+
 **SQLite3 Path**: Ensure `sqlite3.exe` is available in the parent directory to execute queries.
+
 **Debug Mode**: Set `$DebugMode` to `$true` in the script to activate additional debug messages for troubleshooting.
