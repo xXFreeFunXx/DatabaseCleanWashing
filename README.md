@@ -37,7 +37,7 @@ This script:
  - To delete the "wrong assets," run `start_cleanup.bat`.
 2. Database Name Prompt:
 
-When running the script, you will be prompted to enter the database name (without the `.db` extension).
+ - When running the script, you will be prompted to enter the database name (without the `.db` extension).
 3. Results:
 
 `db_assetsPath.txt` – Contains asset paths extracted from the database.
