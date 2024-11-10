@@ -1,7 +1,9 @@
 param ($arg = "")
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 # Set main directory to the directory where the script is located
 $main_dir = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 $db_assetsPath = Join-Path $main_dir -ChildPath "db_assetsPath.txt"  # Output file for database assets
+$tempFilePath = Join-Path $main_dir -ChildPath "temp_db_assetsPath.txt"  # Temp Output file for database assets
 $mod_assetsPath = Join-Path $main_dir -ChildPath "mod_assetsPath.txt"  # Output file for mod assets
 $wrong_assetsPath = Join-Path $main_dir -ChildPath "wrong_assets.txt"  # Output file for wrong assets
 $unrealPakPath = Join-Path $main_dir -ChildPath "UnrealPak.exe"  # Path to UnrealPak.exe
@@ -65,15 +67,12 @@ switch ($arg) {
         # Create the database backup
         CreateDatabaseBackup
 
-        # SQLite3 command and query to retrieve Mod Asset paths from the database
+        # Execute sqlite3 query in batch mode and redirect the output to a temporary file
         $query = "SELECT DISTINCT class FROM actor_position WHERE class LIKE '/Game/Mods/%';"
-        $dbAssetResults = & $sqlitePath $databasePath -header -csv "$query"
+        & $sqlitePath -batch $databasePath "$query" > $db_assetsPath
 
-        # Save results to db_assetsPath.txt only if results are found
-        if ($dbAssetResults) {
-            $dbAssetResults | Out-File -FilePath $db_assetsPath -Encoding UTF8
-            # Optional: Remove the header if it's not needed
-            (Get-Content $db_assetsPath | Select-Object -Skip 1) | Set-Content $db_assetsPath -Encoding UTF8
+        # Check if the file has content (more than 0 bytes)
+        if ((Get-Item $db_assetsPath).Length -gt 0) {
             Write-DebugMessage "Mod Asset paths from the database have been successfully saved to '$db_assetsPath'."
             Write-Output "`n    Searching for old socks in the database..."
         } else {
