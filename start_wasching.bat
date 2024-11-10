@@ -1,2 +1,3 @@
 @echo off
-powershell.exe -ExecutionPolicy Bypass "%~dp0database_clean_washing.ps1" wasching
+set "SCRIPT_PATH=%~dp0database_clean_washing.ps1"
+powershell.exe -ExecutionPolicy Bypass -File "%SCRIPT_PATH%" wasching
