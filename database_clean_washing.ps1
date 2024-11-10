@@ -3,7 +3,6 @@ param ($arg = "")
 # Set main directory to the directory where the script is located
 $main_dir = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 $db_assetsPath = Join-Path $main_dir -ChildPath "db_assetsPath.txt"  # Output file for database assets
-$tempFilePath = Join-Path $main_dir -ChildPath "temp_db_assetsPath.txt"  # Temp Output file for database assets
 $mod_assetsPath = Join-Path $main_dir -ChildPath "mod_assetsPath.txt"  # Output file for mod assets
 $wrong_assetsPath = Join-Path $main_dir -ChildPath "wrong_assets.txt"  # Output file for wrong assets
 $unrealPakPath = Join-Path $main_dir -ChildPath "UnrealPak.exe"  # Path to UnrealPak.exe
