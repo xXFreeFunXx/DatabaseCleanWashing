@@ -73,7 +73,7 @@ switch ($arg) {
         if ($dbAssetResults) {
             $dbAssetResults | Out-File -FilePath $db_assetsPath -Encoding UTF8
             # Optional: Remove the header if it's not needed
-            (Get-Content $db_assetsPath | Select-Object -Skip 1) | Set-Content $db_assetsPath
+            (Get-Content $db_assetsPath | Select-Object -Skip 1) | Set-Content $db_assetsPath -Encoding UTF8
             Write-DebugMessage "Mod Asset paths from the database have been successfully saved to '$db_assetsPath'."
             Write-Output "`n    Searching for old socks in the database..."
         } else {
