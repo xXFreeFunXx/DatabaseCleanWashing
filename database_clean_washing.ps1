@@ -134,8 +134,16 @@ switch ($arg) {
             for ($i = 0; $i -lt $totalDbAssets; $i++) {
                 $assetPath = $dbAssetPaths[$i]
         
-                # Check whether the current path is NOT contained in the mod assets
-                if (-not ($modAssetPaths -contains $assetPath)) {
+                # Check whether the current path is NOT partially contained in the mod assets
+                $isFound = $false
+                foreach ($modAssetPath in $modAssetPaths) {
+                    if ($assetPath.StartsWith($modAssetPath)) {
+                        $isFound = $true
+                        break
+                    }
+                }
+        
+                if (-not $isFound) {
                     $escapedAssetPath = $assetPath -replace "'", "''"
                     $sqlContent += "DELETE FROM actor_position WHERE class = '$escapedAssetPath';"
                 }
@@ -166,7 +174,7 @@ switch ($arg) {
             Read-Host
         } else {
             Write-Output "`nError: Missing required files for comparison."
-        }        
+        }
     }
     cleanup {
         # Create a database backup with the current date and timestamp
