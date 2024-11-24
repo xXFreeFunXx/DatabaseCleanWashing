@@ -7,7 +7,7 @@ $mod_assetsPath = Join-Path $main_dir -ChildPath "mod_assetsPath.txt"  # Output 
 $sql_FilePath = Join-Path $main_dir -ChildPath "delete_assets.sql"  # SQL file for deleting assets
 $unrealPakPath = Join-Path $main_dir -ChildPath "UnrealPak.exe"  # Path to UnrealPak.exe
 $sqlitePath = Resolve-Path -Path (Join-Path $main_dir -ChildPath "..\sqlite3.exe") # Path to sqlite3.exe
-$DebugMode = $false  # Set to $true to activate debug prints
+$DebugMode = $true  # Set to $true to activate debug prints
 
 # Debugging function
 function Write-DebugMessage {
@@ -192,8 +192,12 @@ switch ($arg) {
 
         # Refer the SQL script "delete_assets.sql" to "sqlite3.exe"
         $sql_FilePath = $sql_FilePath -replace '\\', '\\\\'
+        Write-DebugMessage "SQLite Tool Pfad: $sqlitePath"
+        Write-DebugMessage "SQLite Database Pfad: $databasePath"
+        Write-DebugMessage "SQLite .read Pfad: $sql_FilePath"
         $sql_output = & $sqlitePath $databasePath ".read $sql_FilePath"
         & $sqlitePath $databasePath ".exit"
+
         if ($sql_output -notmatch "ok") {
             Write-DebugMessage "Fehler: Das SQL-Skript wurde nicht erfolgreich ausgeführt."
             Write-DebugMessage "Details: $sql_output"
