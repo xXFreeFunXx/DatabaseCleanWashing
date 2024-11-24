@@ -7,7 +7,7 @@ $mod_assetsPath = Join-Path $main_dir -ChildPath "mod_assetsPath.txt"  # Output 
 $sql_FilePath = Join-Path $main_dir -ChildPath "delete_assets.sql"  # SQL file for deleting assets
 $unrealPakPath = Join-Path $main_dir -ChildPath "UnrealPak.exe"  # Path to UnrealPak.exe
 $sqlitePath = Resolve-Path -Path (Join-Path $main_dir -ChildPath "..\sqlite3.exe") # Path to sqlite3.exe
-$DebugMode = $true  # Set to $true to activate debug prints
+$DebugMode = $false  # Set to $true to activate debug prints
 
 # Debugging function
 function Write-DebugMessage {
@@ -123,28 +123,34 @@ switch ($arg) {
             $dbAssetPaths = Get-Content -Path $db_assetsPath | Sort-Object -Unique
             $modAssetPaths = Get-Content -Path $mod_assetsPath | Sort-Object -Unique
             $totalDbAssets = $dbAssetPaths.Count
-
+        
+            # Create the contents of the SQL file
             $sqlContent = @()
             $sqlContent += "-- SQL Script to delete assets in the actor_position table"
             $sqlContent += "-- Created on $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")"
             $sqlContent += ""
-
+        
+            # Iterate through database assets
             for ($i = 0; $i -lt $totalDbAssets; $i++) {
                 $assetPath = $dbAssetPaths[$i]
-                if ($assetPath -notin $modAssetPaths) {
+        
+                # Check whether the current path is NOT contained in the mod assets
+                if (-not ($modAssetPaths -contains $assetPath)) {
                     $escapedAssetPath = $assetPath -replace "'", "''"
                     $sqlContent += "DELETE FROM actor_position WHERE class = '$escapedAssetPath';"
                 }
                 Write-Progress -Activity "  Comparing assets" -Status "$i of $totalDbAssets" -PercentComplete (($i / $totalDbAssets) * 100)
             }
+        
             Write-Progress -Activity "  Comparing Completed" -Completed
-
+        
+            # Add additional SQL commands
             $sqlContent += ""
             $sqlContent += "VACUUM;"
             $sqlContent += "REINDEX;"
             $sqlContent += "ANALYZE;"
             $sqlContent += "PRAGMA integrity_check;"
-            
+        
             # Encode the SQL script 'delete_assets.sql' in UTF-8
             $utf8Encoding = New-Object System.Text.UTF8Encoding($false)
             $streamWriter = [System.IO.StreamWriter]::new($sql_FilePath, $false, $utf8Encoding)
@@ -160,7 +166,7 @@ switch ($arg) {
             Read-Host
         } else {
             Write-Output "`nError: Missing required files for comparison."
-        }
+        }        
     }
     cleanup {
         # Create a database backup with the current date and timestamp
