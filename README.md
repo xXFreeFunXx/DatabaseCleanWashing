@@ -20,7 +20,10 @@ To use the script, you will need the following tools and files:
    - Copy the `UnrealPak.exe` file into the same directory as this script (`DatabaseCleanWashing`).
 
 2. **sqlite3.exe**
-   - This tool is required to process the SQLite database. It is typically found in the `Saved` folder of both the Conan Exiles server and client installations.
+   - This tool is required to process the SQLite database. It must be located in the `Saved` directory of your Conan Exiles server:
+     ```
+     ...\ConanSandbox\Saved\sqlite3.exe
+     ```
 
 3. **Folder Placement**
    - Place the `DatabaseCleanWashing` folder in the `Saved` directory of your Conan Exiles server:
@@ -61,9 +64,9 @@ The script is executed using batch files included in the `DatabaseCleanWashing` 
 
 ## Tools Recap
 
-Ensure the following tools are present in the `DatabaseCleanWashing` directory:
-1. **UnrealPak.exe** – Extracts asset information from PAK files.
-2. **sqlite3.exe** – Processes the database.
+Ensure the following tools are present:
+1. **UnrealPak.exe** – Located in the `DatabaseCleanWashing` directory. Extracts asset information from PAK files.
+2. **sqlite3.exe** – Located in the `...\ConanSandbox\Saved` directory. Processes the database.
 
 ---
 
