@@ -20,10 +20,12 @@ function Write-DebugMessage {
 }
 
 if (-Not $arg) {
+    # If the script was started without arguments or without the batch files
     Write-Output "`n    Execute the script via one of the batch files!"
     Read-Host
     exit
 } else {
+    # Specify database name
     Write-Output "`nEnter the name of the database!`n   For Exiles Lands it is `"game`"`n   For Siptah it is `"dlc_siptah`"`n   For Savage Wilds it is `"savagewilds_game`"`n"
     $databaseName = Read-Host "Enter the name of the database"  # Database name without file extension Exiled Lands game.db > "game" | Siptah dlc_siptah.db > "dlc_siptah"
     $databasePath = Resolve-Path -Path (Join-Path $main_dir -ChildPath "..\$databaseName.db") -ErrorAction Ignore  # Path to the SQLite database
@@ -143,9 +145,9 @@ switch ($arg) {
             $sqlContent += "ANALYZE;"
             $sqlContent += "PRAGMA integrity_check;"
             
-            # Schreiben der SQL-Datei ohne BOM
-            $utf8NoBomEncoding = New-Object System.Text.UTF8Encoding($false) # UTF-8 ohne BOM
-            $streamWriter = [System.IO.StreamWriter]::new($sql_FilePath, $false, $utf8NoBomEncoding)
+            # Encode the SQL script 'delete_assets.sql' in UTF-8
+            $utf8Encoding = New-Object System.Text.UTF8Encoding($false)
+            $streamWriter = [System.IO.StreamWriter]::new($sql_FilePath, $false, $utf8Encoding)
             try {
                 foreach ($line in $sqlContent) {
                     $streamWriter.WriteLine($line)
@@ -181,14 +183,14 @@ switch ($arg) {
         Write-Output "`n    Create a backup first..."
         CreateDatabaseBackup
 
-        # Überprüfen, ob die "delete_assets.sql" existiert
+        # Check if "delete_assets.sql" exists
         if (!(Test-Path -Path $sql_FilePath)) {
             Write-Output "`n    No 'delete_assets.sql' file found. Exiting script as there are no assets to delete."
             Read-Host
             exit
         }
 
-        # SQL-Datei direkt an sqlite3.exe übergeben
+        # Refer the SQL script "delete_assets.sql" to "sqlite3.exe"
         $sql_FilePath = $sql_FilePath -replace '\\', '\\\\'
         $sql_output = & $sqlitePath $databasePath ".read $sql_FilePath"
         & $sqlitePath $databasePath ".exit"
@@ -199,11 +201,12 @@ switch ($arg) {
             exit
         }
 
-        # Ende des Skripts
+        # End of script
         Write-Output "`n    Script finished."
         Read-Host
     }
     Default {
+        # It's wrong, just wrong what's going on here
         Write-Output "Whatever you do, it's wrong!"
         Read-Host
         Exit
