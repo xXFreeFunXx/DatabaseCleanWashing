@@ -195,7 +195,7 @@ switch ($arg) {
         Write-DebugMessage "SQLite Tool Pfad: $sqlitePath"
         Write-DebugMessage "SQLite Database Pfad: $databasePath"
         Write-DebugMessage "SQLite .read Pfad: $sql_FilePath"
-        $sql_output = & $sqlitePath $databasePath ".read $sql_FilePath"
+        $sql_output = & $sqlitePath $databasePath ".read '$sql_FilePath'"
         & $sqlitePath $databasePath ".exit"
 
         if ($sql_output -notmatch "ok") {
