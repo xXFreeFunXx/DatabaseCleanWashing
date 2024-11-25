@@ -1,3 +1,24 @@
+<#
+.SYNOPSIS
+DatabaseCleanWashing Script for cleaning unused asset paths from Conan Exiles server databases.
+
+.DESCRIPTION
+This script removes obsolete asset paths from the database by comparing database entries with mod assets listed in .pak files or modlist.txt. It ensures the database stays clean even when mods are removed or assets are renamed.
+
+.AUTHOR
+FreeFun (on GitHub xXFreeFunXx)
+
+.LICENSE
+MIT License
+
+.COPYRIGHT
+Copyright (c) 2024 FreeFun (on GitHub xXFreeFunXx)
+
+.VERSION
+1.0.0
+Release Date: 25.11.2024
+#>
+
 param ($arg = "")
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 # Set main directory to the directory where the script is located
